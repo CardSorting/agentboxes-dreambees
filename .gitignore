@@ -24,3 +24,7 @@ temp/
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# Media render cache / intermediate frames
+media/poster_session/
+media/defense_session/
