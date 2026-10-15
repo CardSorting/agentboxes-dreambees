@@ -1,0 +1,74 @@
+#!/bin/bash
+set -euo pipefail
+
+if [ -f /tmp/desktop-bus ]; then
+  export DBUS_SESSION_BUS_ADDRESS
+  DBUS_SESSION_BUS_ADDRESS=$(cat /tmp/desktop-bus)
+fi
+
+APP="${1:-terminal}"
+
+case "$APP" in
+  terminal)
+    exec xfce4-terminal --disable-server --hide-menubar --title="Terminal" \
+      --geometry=100x28 --working-directory="$HOME/workspace"
+    ;;
+  chrome)
+    exec google-chrome-stable --no-first-run --no-default-browser-check --disable-dev-shm-usage \
+      --password-store=basic --use-mock-keychain --ozone-platform=x11 \
+      --window-size=1120,700 --window-position=160,64 --new-window "${2:-file:///opt/agentbox/welcome.html}"
+    ;;
+  cursor)
+    if [ -x /home/operator/.local/bin/cursor ]; then
+      exec /home/operator/.local/bin/cursor
+    else
+      exec xfce4-terminal --disable-server --hide-menubar --title="Cursor Installer" \
+        --geometry=90x24 --working-directory="$HOME/workspace" \
+        --command="bash -c 'agentbox install cursor && cursor || read -p \"Press Enter to exit.\"; bash'"
+    fi
+    ;;
+  codex)
+    exec xfce4-terminal --disable-server --hide-menubar --title="OpenAI Codex" \
+      --geometry=100x28 --working-directory="$HOME/workspace" \
+      --command="bash -c 'echo \"=== OpenAI Codex Agent ===\"; codex || codex --help; exec bash'"
+    ;;
+  claude)
+    exec xfce4-terminal --disable-server --hide-menubar --title="Claude Code" \
+      --geometry=100x28 --working-directory="$HOME/workspace" \
+      --command="bash -c 'if which claude >/dev/null 2>&1; then claude; else echo \"Claude Code not installed. Run: agentbox install claude-code\"; fi; exec bash'"
+    ;;
+  agy)
+    exec xfce4-terminal --disable-server --hide-menubar --title="Google Antigravity" \
+      --geometry=100x28 --working-directory="$HOME/workspace" \
+      --command="bash -c 'if which agy >/dev/null 2>&1; then agy; else echo \"Antigravity not installed. Run: agentbox install google-antigravity\"; fi; exec bash'"
+    ;;
+  hermes-agent)
+    exec xfce4-terminal --disable-server --hide-menubar --title="Hermes Agent" \
+      --geometry=100x28 --working-directory="$HOME/workspace" \
+      --command="bash -c 'if [ -x /home/operator/.local/bin/hermes-agent ]; then /home/operator/.local/bin/hermes-agent; else echo \"Hermes Agent not installed. Run: agentbox install hermes-agent\"; fi; exec bash'"
+    ;;
+  openclaw)
+    exec xfce4-terminal --disable-server --hide-menubar --title="OpenClaw" \
+      --geometry=100x28 --working-directory="$HOME/workspace" \
+      --command="bash -c 'if [ -x /home/operator/.local/bin/openclaw ]; then /home/operator/.local/bin/openclaw; else echo \"OpenClaw not installed. Run: agentbox install openclaw\"; fi; exec bash'"
+    ;;
+  grok)
+    exec xfce4-terminal --disable-server --hide-menubar --title="Grok CLI" \
+      --geometry=100x28 --working-directory="$HOME/workspace" \
+      --command="bash -c 'if [ -x /home/operator/.local/bin/grok ]; then /home/operator/.local/bin/grok; else echo \"Grok CLI not installed. Run: agentbox install grok-tools\"; fi; exec bash'"
+    ;;
+  muse)
+    exec xfce4-terminal --disable-server --hide-menubar --title="Muse Agent" \
+      --geometry=100x28 --working-directory="$HOME/workspace" \
+      --command="bash -c 'if [ -x /home/operator/.local/bin/muse ]; then /home/operator/.local/bin/muse; else echo \"Muse not installed. Run: agentbox install muse\"; fi; exec bash'"
+    ;;
+  aider)
+    exec xfce4-terminal --disable-server --hide-menubar --title="Aider Chat" \
+      --geometry=100x28 --working-directory="$HOME/workspace" \
+      --command="bash -c 'if [ -x /home/operator/.local/bin/aider ]; then /home/operator/.local/bin/aider; else echo \"Aider not installed. Run: agentbox install aider\"; fi; exec bash'"
+    ;;
+  *)
+    exec xfce4-terminal --disable-server --hide-menubar --title="$APP" \
+      --geometry=100x28 --working-directory="$HOME/workspace" --command="$APP"
+    ;;
+esac

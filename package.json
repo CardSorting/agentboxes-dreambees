@@ -1,0 +1,47 @@
+{
+  "name": "dreambeesai-agentboxes",
+  "version": "1.0.0",
+  "description": "AgentBoxes: Managed Linux Desktop Environments for Autonomous Agents (The Final Reincarnation of DreamBeesAI)",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "agentbox": "./bin/agentbox"
+  },
+  "scripts": {
+    "start": "node --import tsx src/index.ts",
+    "dev": "node --import tsx --watch src/index.ts",
+    "cli": "node --import tsx src/cli/agentboxes-cli.ts",
+    "test": "node --import tsx --test --test-concurrency=1 tests/test-catalog.ts tests/test-provisioning.ts tests/test-persistence.ts tests/test-isolation.ts tests/test-gateway.ts tests/test-metrics.ts tests/test-lifecycle.ts tests/test-autonomous-lifecycle.ts tests/test-managed-hive-acceptance.ts tests/test-starter-export.ts tests/test-byoa-acceptance.ts tests/test-unified-agentbox.ts tests/test-multiplayer-acceptance.ts tests/test-commission-011-acceptance.ts tests/test-commission-012-adversarial.ts tests/test-commission-013-boring.ts",
+    "test:catalog": "node --import tsx --test tests/test-catalog.ts",
+    "test:provisioning": "node --import tsx --test tests/test-provisioning.ts",
+    "test:persistence": "node --import tsx --test tests/test-persistence.ts",
+    "test:isolation": "node --import tsx --test tests/test-isolation.ts",
+    "test:gateway": "node --import tsx --test tests/test-gateway.ts",
+    "test:metrics": "node --import tsx --test tests/test-metrics.ts",
+    "test:lifecycle": "node --import tsx --test tests/test-lifecycle.ts",
+    "test:autonomous": "node --import tsx --test tests/test-autonomous-lifecycle.ts",
+    "test:acceptance": "node --import tsx --test tests/test-managed-hive-acceptance.ts",
+    "test:byoa": "node --import tsx --test tests/test-byoa-acceptance.ts",
+    "test:export": "node --import tsx --test tests/test-starter-export.ts",
+    "test:unified": "node --import tsx --test tests/test-unified-agentbox.ts",
+    "test:multiplayer": "node --import tsx --test tests/test-multiplayer-acceptance.ts",
+    "test:commission011": "node --import tsx --test tests/test-commission-011-acceptance.ts",
+    "test:commission012": "node --import tsx --test tests/test-commission-012-adversarial.ts",
+    "test:commission013": "node --import tsx --test tests/test-commission-013-boring.ts",
+    "docker:build": "docker build -f Dockerfile.agentbox -t dreambeesai/agentbox:latest -t dreambeesai/agentbox:v1 ."
+  },
+  "dependencies": {
+    "@novnc/novnc": "^1.7.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

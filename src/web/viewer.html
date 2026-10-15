@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AgentBoxes · Remote Linux Desktop</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body {
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #050610;
+    }
+    .viewer-header {
+      flex-shrink: 0;
+      height: 54px;
+      padding: 8px 16px;
+      background: rgba(14, 18, 36, 0.95);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 20;
+    }
+    .viewer-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .viewer-title-group h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .quick-launch-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .quick-launch-group button {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    .viewer-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .viewer-tools button {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    #screen {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      position: relative;
+      background: #050610;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #screen canvas {
+      outline: none;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    }
+    /* Drawer Panels */
+    .drawer-panel {
+      position: absolute;
+      right: 16px;
+      top: 64px;
+      width: min(440px, calc(100% - 32px));
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      z-index: 30;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7);
+    }
+    .drawer-panel textarea {
+      width: 100%;
+      height: 140px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 10px;
+      margin: 10px 0;
+      resize: vertical;
+    }
+    /* Virtual keyboard bar */
+    .virtual-keyboard-bar {
+      flex-shrink: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .virtual-keyboard-bar button {
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="viewer-header" role="banner">
+    <div class="viewer-title-group">
+      <a href="/" class="btn" style="padding: 6px 10px;" title="Leave workstation running in background and return to dashboard">← Dashboard</a>
+      <div>
+        <h2 id="view-box-name">AgentBox Desktop</h2>
+        <span id="view-connection-status" class="status-pill stopped" style="font-size: 10px; padding: 2px 8px;">
+          <span class="status-pulse"></span> Connecting…
+        </span>
+      </div>
+    </div>
+
+    <!-- Quick App Launchers -->
+    <div class="quick-launch-group" role="toolbar" aria-label="Quick launch tools">
+      <button id="btn-launch-terminal" type="button" class="btn" title="Launch Linux bash terminal">Terminal</button>
+      <button id="btn-launch-chrome" type="button" class="btn" title="Launch Google Chrome">Chrome</button>
+      <button id="btn-launch-claude" type="button" class="btn primary" title="Launch Claude Code Agent">⚡ Claude</button>
+      <button id="btn-launch-codex" type="button" class="btn primary" title="Launch Codex CLI">⚡ Codex</button>
+      <button id="btn-launch-cursor" type="button" class="btn" title="Launch Cursor IDE">Cursor</button>
+    </div>
+
+    <!-- Display & Viewer Tools -->
+    <div class="viewer-tools" role="toolbar" aria-label="Session management controls">
+      <button id="btn-export-work" type="button" class="btn primary" title="Download all workspace files as .tar.gz archive">💾 Export Work</button>
+      <button id="btn-toggle-clipboard" type="button" class="btn" title="Open clipboard sync drawer">📋 Clipboard</button>
+      <button id="btn-toggle-keyboard" type="button" class="btn" title="Toggle virtual keyboard shortcuts">⌨️ Keys</button>
+      <button id="btn-suspend-session" type="button" class="btn" title="Pause compute to save money (preserves workspace files)">⏸️ Suspend</button>
+      <button id="btn-teardown-session" type="button" class="btn danger" style="padding: 6px 10px;" title="Permanently destroy this box and all data">🛑 Teardown</button>
+      <button id="btn-scale-fit" type="button" class="btn" aria-pressed="true" title="Toggle scale to fit viewport">Fit</button>
+      <button id="btn-fullscreen" type="button" class="btn" title="Toggle full screen">⛶</button>
+    </div>
+  </div>
+
+  <!-- Consumer Guidance Toast -->
+  <aside id="viewer-onboarding-toast" class="onboarding-toast" style="position: absolute; bottom: 20px; right: 20px; z-index: 40; background: var(--surface-raised); border: 1px solid var(--amber-glow); border-radius: 12px; padding: 14px 18px; max-width: 420px; box-shadow: 0 16px 36px rgba(0,0,0,0.7); display: flex; align-items: flex-start; gap: 12px;">
+    <div style="font-size: 20px;">💡</div>
+    <div style="font-size: 13px; color: var(--text-sub); line-height: 1.5;">
+      <strong style="color: #fff; display: block; margin-bottom: 2px;">Your Unified AgentBox is Ready</strong>
+      Claude Code and OpenAI Codex are preinstalled. Launch either agent from the toolbar above or dock. Files live in <code>~/workspace</code> and can be exported anytime via <strong>💾 Export Work</strong>.
+    </div>
+    <button id="btn-dismiss-toast" type="button" class="btn" style="padding: 2px 8px; font-size: 12px; margin-left: 4px;" aria-label="Dismiss message">✕</button>
+  </aside>
+
+  <!-- RFB Canvas Region -->
+  <div id="screen"></div>
+
+  <!-- Virtual Keyboard Strip (Toggleable) -->
+  <div id="keyboard-strip" class="virtual-keyboard-bar" style="display: none;">
+    <span style="font-size: 11px; color: var(--text-muted); margin-right: 8px;">Virtual Keys:</span>
+    <button data-key="Control" type="button">Ctrl</button>
+    <button data-key="Alt" type="button">Alt</button>
+    <button data-key="Tab" type="button">Tab</button>
+    <button data-key="Escape" type="button">Esc</button>
+    <button data-key="BackSpace" type="button">Backspace</button>
+    <button data-key="Return" type="button">Enter</button>
+    <div style="flex: 1;"></div>
+    <button id="btn-close-kb-strip" type="button" style="padding: 2px 8px;">✕</button>
+  </div>
+
+  <!-- Clipboard Sync Drawer -->
+  <div id="clipboard-drawer" class="drawer-panel" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 16px;">Clipboard Synchronization</h3>
+      <button id="btn-close-clipboard" type="button" class="btn" style="padding: 2px 8px;">✕</button>
+    </div>
+    <textarea id="clipboard-input" placeholder="Type or paste text to send to the AgentBox..."></textarea>
+    <div style="display: flex; gap: 8px;">
+      <button id="btn-send-clipboard" type="button" class="btn primary" style="flex: 1;">Send to Desktop</button>
+      <button id="btn-read-clipboard" type="button" class="btn">Copy from Desktop</button>
+    </div>
+    <small id="clipboard-msg" style="display: block; margin-top: 8px; color: var(--text-muted);"></small>
+  </div>
+
+  <script src="/viewer.js" type="module"></script>
+</body>
+</html>

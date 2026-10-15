@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Welcome to AgentBoxes · DreamBeesAI</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090c15;
+      --card: #121727;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #f6ad55;
+      --text: #edf2f7;
+      --muted: #94a3b8;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 760px;
+      width: 100%;
+    }
+    .header {
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 32px;
+      margin: 0 0 12px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    p.lead {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 18px;
+      margin: 0 0 12px;
+      color: #fff;
+    }
+    .card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 16px;
+    }
+    code {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .provider-box {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .provider-box strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #fff;
+      font-size: 14px;
+    }
+    .provider-box small {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      display: block;
+    }
+    .footer {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 40px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">🐝 DreamBeesAI · AgentBoxes</div>
+      <h1>Your Private Linux Computer</h1>
+      <p class="lead">We provide the computer. The industry provides the agents. You choose.</p>
+    </div>
+
+    <div class="card">
+      <h2>Persistent Storage & Environment</h2>
+      <p>Your work in <code>~/workspace</code> and home directory <code>~</code> is backed by a persistent storage volume. Files, git checkouts, installed packages, and browser logins remain saved when you disconnect or stop this AgentBox.</p>
+      <p>Use the Terminal from the Dock or run <code>agentbox status</code> to verify your environment health.</p>
+    </div>
+
+    <div class="card">
+      <h2>Bring Your Own Keys (BYOK)</h2>
+      <p>AgentBoxes does not sell inference tokens. You connect with your own subscriptions and API quotas. Credentials remain strictly isolated inside your private container and never leak to other tenants.</p>
+      
+      <div class="grid">
+        <div class="provider-box">
+          <strong>OpenAI Codex</strong>
+          <small>Run <code>codex login</code> or set <code>OPENAI_API_KEY</code>.</small>
+        </div>
+        <div class="provider-box">
+          <strong>Anthropic Claude Code</strong>
+          <small>Set <code>ANTHROPIC_API_KEY</code> or run <code>claude</code>.</small>
+        </div>
+        <div class="provider-box">
+          <strong>Cursor IDE</strong>
+          <small>Launch Cursor and sign in via browser OAuth.</small>
+        </div>
+        <div class="provider-box">
+          <strong>Google Antigravity</strong>
+          <small>Set <code>GEMINI_API_KEY</code> and run <code>agy</code>.</small>
+        </div>
+        <div class="provider-box">
+          <strong>Nous Hermes</strong>
+          <small>Set <code>OPENROUTER_API_KEY</code> and run <code>hermes-agent</code>.</small>
+        </div>
+        <div class="provider-box">
+          <strong>xAI Grok</strong>
+          <small>Set <code>XAI_API_KEY</code> and run <code>grok</code>.</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      AgentBoxes: Commission 007 · HEAV3NS Foundation · Billions. Must. Compute.
+    </div>
+  </div>
+</body>
+</html>

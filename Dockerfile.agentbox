@@ -1,0 +1,53 @@
+# =====================================================================
+# DreamBeesAI AgentBoxes — Reproducible Linux Desktop Image
+# Commission 007: Managed Linux Environment for Autonomous Agents
+# =====================================================================
+# If galxai-relay-desktop:v1 exists locally, builds take < 2 seconds.
+# Otherwise, can be built directly from node:22-bookworm-slim base.
+
+FROM galxai-relay-desktop:v1 AS agentbox-base
+
+USER root
+
+# Create AgentBoxes directories
+RUN mkdir -p /opt/agentbox /opt/agentbox/bin /opt/agentbox/scripts
+
+# Install official Anthropic Claude Code and OpenAI Codex CLIs
+RUN npm --prefix /usr/local install -g @anthropic-ai/claude-code @openai/codex
+
+# Copy AgentBoxes desktop runtime components
+COPY desktop-image/ /opt/agentbox/
+
+# Install AgentBoxes system CLI links and permissions
+RUN chmod +x /opt/agentbox/start.sh \
+             /opt/agentbox/session.sh \
+             /opt/agentbox/open-app \
+             /opt/agentbox/launch-app \
+             /opt/agentbox/bin/agentbox \
+             /opt/agentbox/bin/claude \
+    && echo "umask 002" > /etc/agentbox-env.sh \
+    && chmod 644 /etc/agentbox-env.sh \
+    && ln -sf /opt/agentbox/bin/agentbox /usr/local/bin/agentbox \
+    && ln -sf /usr/local/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe /usr/local/bin/claude \
+    && ln -sf /usr/local/lib/node_modules/@openai/codex/bin/codex.js /usr/local/bin/codex \
+    && ln -sf /opt/agentbox/bin/claude /usr/local/bin/claude-simulated \
+    && ln -sf /opt/agentbox/open-app /usr/local/bin/agentbox-open \
+    && chown -R 1000:1000 /opt/agentbox
+
+# Environment and working directories
+ENV HOME=/home/operator \
+    DISPLAY=:0 \
+    LANG=C.UTF-8 \
+    BASH_ENV=/etc/agentbox-env.sh \
+    XDG_RUNTIME_DIR=/tmp/agentbox-runtime \
+    NPM_CONFIG_PREFIX=/home/operator/.local \
+    PATH=/home/operator/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+USER 1000:1000
+WORKDIR /home/operator/workspace
+
+# Liveness and health check
+HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=3 \
+  CMD test -f /tmp/desktop-ready && pgrep -x xfwm4 >/dev/null && pgrep -x x11vnc >/dev/null && DISPLAY=:0 xdpyinfo >/dev/null
+
+ENTRYPOINT ["/usr/bin/tini", "--", "/opt/agentbox/start.sh"]

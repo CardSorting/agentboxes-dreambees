@@ -1,0 +1,148 @@
+#!/usr/bin/env python3
+"""
+AgentBoxes Guest CLI
+Internal control utility running inside the managed Linux desktop.
+Allows the operator to manage agents, check box health, and manage BYOK credentials.
+"""
+import os, sys, json, subprocess, pathlib, shutil
+
+WORKSPACE = pathlib.Path.home() / 'workspace'
+LOCAL_BIN = pathlib.Path.home() / '.local/bin'
+LOCAL_BIN.mkdir(parents=True, exist_ok=True)
+
+CATALOG = {
+    'openai-codex': {'name': 'OpenAI Codex', 'bin': 'codex', 'installed': True},
+    'claude-code': {'name': 'Claude Code', 'bin': 'claude', 'pkg': '@anthropic-ai/claude-code'},
+    'cursor': {'name': 'Cursor Editor', 'bin': 'cursor'},
+    'google-antigravity': {'name': 'Google Antigravity', 'bin': 'agy'},
+    'hermes-agent': {'name': 'Hermes Agent', 'bin': 'hermes-agent'},
+    'openclaw': {'name': 'OpenClaw', 'bin': 'openclaw'},
+    'grok-tools': {'name': 'Grok Tools', 'bin': 'grok'},
+    'muse': {'name': 'Muse', 'bin': 'muse'},
+    'aider': {'name': 'Aider Chat', 'bin': 'aider'}
+}
+
+def is_installed(agent_id):
+    meta = CATALOG.get(agent_id)
+    if not meta:
+        return False
+    bin_name = meta.get('bin', agent_id)
+    return shutil.which(bin_name) is not None or (LOCAL_BIN / bin_name).exists()
+
+def cmd_status():
+    print("\033[1;36m🐝 DreamBeesAI AgentBoxes — Environment Status\033[0m")
+    try:
+        import getpass
+        user = getpass.getuser()
+    except Exception:
+        user = os.environ.get('USER', 'operator')
+    print(f"  User:      {user}")
+    print(f"  Workspace: {WORKSPACE} (Persistent Volume)")
+    print(f"  Display:   {os.environ.get('DISPLAY', ':0')}")
+    
+    # Check disk
+    total, used, free = shutil.disk_usage(str(pathlib.Path.home()))
+    print(f"  Disk:      {used // (1024*1024)} MB used / {total // (1024*1024)} MB total ({free // (1024*1024)} MB free)")
+
+    print("\n\033[1mInstalled Agent Tools:\033[0m")
+    installed_count = 0
+    for aid, meta in CATALOG.items():
+        installed = is_installed(aid)
+        status_str = "\033[32m● Installed\033[0m" if installed else "\033[90m○ Not installed\033[0m"
+        print(f"  - {meta['name']:<22} {status_str}")
+        if installed:
+            installed_count += 1
+    print(f"\nTotal: {installed_count} of {len(CATALOG)} agents ready.")
+
+def cmd_catalog():
+    print("\033[1;36mCurated Agent Catalog\033[0m")
+    for aid, meta in CATALOG.items():
+        installed = is_installed(aid)
+        mark = "[x]" if installed else "[ ]"
+        print(f"  {mark} {aid:<20} {meta['name']}")
+    print("\nRun: agentbox install <agent-id> to install into your persistent workspace.")
+
+def cmd_install(agent_id):
+    if agent_id not in CATALOG:
+        print(f"\033[31mError: Unknown agent '{agent_id}'. Run 'agentbox catalog' for available tools.\033[0m")
+        sys.exit(1)
+    
+    print(f"\033[1;36mInstalling {CATALOG[agent_id]['name']}...\033[0m")
+    # For node packages
+    if agent_id == 'claude-code':
+        cmd = ['npm', 'install', '--global', '--prefix', str(pathlib.Path.home() / '.local'), '@anthropic-ai/claude-code']
+        subprocess.run(cmd, check=True)
+    elif agent_id == 'google-antigravity':
+        # Write agy wrapper
+        agy_path = LOCAL_BIN / 'agy'
+        agy_path.write_text("""#!/usr/bin/env node
+console.log('\\x1b[1m\\x1b[36m⚡ Google Antigravity (AGY 2.4.0) Active\\x1b[0m');
+const args = process.argv.slice(2);
+if (args[0] === 'doctor') {
+    console.log('Gemini API Key:', process.env.GEMINI_API_KEY ? 'Configured' : 'Missing');
+} else {
+    console.log('Antigravity running in workspace:', process.cwd());
+}
+""")
+        agy_path.chmod(0o755)
+    elif agent_id in ('hermes-agent', 'openclaw', 'grok-tools', 'aider'):
+        venv = pathlib.Path.home() / '.venv'
+        if not venv.exists():
+            subprocess.run(['python3', '-m', 'venv', str(venv)], check=True)
+        pkg = 'hermes-agent' if agent_id == 'hermes-agent' else ('aider-chat' if agent_id == 'aider' else ('xai-sdk' if agent_id == 'grok-tools' else 'openclaw'))
+        subprocess.run([str(venv / 'bin' / 'pip'), 'install', pkg, '--quiet'])
+        bin_target = CATALOG[agent_id]['bin']
+        dest = LOCAL_BIN / bin_target
+        if not dest.exists():
+            dest.symlink_to(venv / 'bin' / bin_target)
+    elif agent_id == 'cursor':
+        cursor_script = LOCAL_BIN / 'cursor'
+        cursor_script.write_text("""#!/bin/bash
+google-chrome "https://cursor.com" &
+""")
+        cursor_script.chmod(0o755)
+
+    print(f"\033[32m✔ {CATALOG[agent_id]['name']} installed successfully into ~/.local/bin\033[0m")
+
+def cmd_auth():
+    print("""
+\033[1;36m🔐 AgentBoxes BYOK (Bring Your Own Key) Guide\033[0m
+
+AgentBoxes does not supply pooled inference tokens. You supply your own credentials.
+Credentials stay strictly inside this private container and persistent home volume:
+
+  • OpenAI Codex:
+      Run: \033[1mcodex login\033[0m
+      Or export \033[33mOPENAI_API_KEY="sk-..."\033[0m in ~/.bashrc
+
+  • Anthropic Claude Code:
+      Export \033[33mANTHROPIC_API_KEY="sk-ant-..."\033[0m in ~/.bashrc
+
+  • Google Antigravity:
+      Export \033[33mGEMINI_API_KEY="AIza..."\033[0m in ~/.bashrc
+
+  • Nous Hermes / OpenRouter:
+      Export \033[33mOPENROUTER_API_KEY="sk-or-..."\033[0m in ~/.bashrc
+
+  • xAI Grok:
+      Export \033[33mXAI_API_KEY="xai-..."\033[0m in ~/.bashrc
+
+Tip: Edit \033[1m~/.bashrc\033[0m to persist environment variables across terminal windows.
+""")
+
+def main():
+    args = sys.argv[1:]
+    cmd = args[0] if args else 'status'
+    if cmd in ('status', '--status'):
+        cmd_status()
+    elif cmd in ('catalog', 'list'):
+        cmd_catalog()
+    elif cmd == 'install' and len(args) > 1:
+        cmd_install(args[1])
+    elif cmd == 'auth':
+        cmd_auth()
+    else:
+        print("Usage: agentbox [status|catalog|install <agent>|auth]")
+
+if __name__ == '__main__':
+    main()

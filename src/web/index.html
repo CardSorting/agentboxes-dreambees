@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DreamBees · The Invisible Computer</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="brand-group">
+      <div class="brand-logo" aria-label="DreamBees logo">🐝</div>
+      <div class="brand-title">
+        <h1>DreamBees <span class="brand-badge">The Invisible Computer</span></h1>
+        <span class="brand-sub">One Computer · Multiple Independent Desktops · Shared Work</span>
+      </div>
+    </div>
+    <div class="header-nav">
+      <button id="btn-byok-info" type="button" class="btn" aria-haspopup="dialog">🔐 Keys &amp; Privacy</button>
+      <button id="btn-new-box" type="button" class="btn primary" aria-haspopup="dialog">＋ Create Computer</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero Summary Bar -->
+    <section class="hero-banner" aria-labelledby="hero-heading">
+      <div class="hero-content">
+        <h2 id="hero-heading">A personal or shared computer with AI tools already installed.</h2>
+        <p>A familiar Linux computer you can access from anywhere. Sign in once with your own AI accounts, work in your own private desktop session, and collaborate seamlessly on shared project files.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <strong id="meta-running-count">0 Active</strong>
+            <span>Active Computers</span>
+          </div>
+          <div class="hero-meta-item">
+            <strong id="meta-total-count">0 Total</strong>
+            <span>Saved Workspaces</span>
+          </div>
+          <div class="hero-meta-item">
+            <strong id="meta-catalog-count">Claude Code &amp; Codex</strong>
+            <span>Pre-installed Agents</span>
+          </div>
+          <div class="hero-meta-item">
+            <strong id="meta-isolation-status">Independent Desktops</strong>
+            <span>0% Screen Sharing</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1-Click Quick Launch Card -->
+    <div class="byoa-hero-card" role="region" aria-label="Quick launch computer">
+      <div class="byoa-card-left">
+        <div class="byoa-pill">⚡ Ready in ~1.8s · 1-Click Launch</div>
+        <h3>Unified Cloud Computer — Ready to Build</h3>
+        <p>Anthropic Claude Code and OpenAI Codex preinstalled alongside Node.js 22, Git, and Chrome in an isolated Linux desktop. Sign in with your own accounts, run agents in independent desktops, and collaborate in a shared project workspace.</p>
+        <div class="byoa-three-steps">
+          <div class="step-chip"><span>1</span> Create Computer</div>
+          <span class="step-arrow">→</span>
+          <div class="step-chip"><span>2</span> Open Desktop</div>
+          <span class="step-arrow">→</span>
+          <div class="step-chip"><span>3</span> Sign In &amp; Build</div>
+          <span class="step-arrow">→</span>
+          <div class="step-chip"><span>4</span> Share &amp; Export</div>
+        </div>
+        <div style="margin-top: 14px; font-size: 12px; color: var(--text-muted);">
+          <span>💡 <strong>Transparent Pricing:</strong> Model tokens bill directly to your Anthropic or OpenAI account. DreamBees compute is $0.05/hr (auto-pauses when idle).</span>
+          <button id="btn-custom-launch-trigger" type="button" class="btn-link" style="margin-left: 10px; color: var(--amber-glow); background: none; border: none; cursor: pointer; text-decoration: underline; font-size: 12px;">Customize hardware or name...</button>
+        </div>
+      </div>
+      <div class="byoa-card-right">
+        <button id="btn-quick-claude" type="button" class="btn primary btn-cta" aria-label="Launch Computer in One Click">⚡ Launch Computer</button>
+        <span class="byoa-hint">Ready in ~1.8s · 2 vCPUs · 4GB RAM · Auto-pauses on idle</span>
+      </div>
+    </div>
+
+    <!-- Primary Navigation (Commission 012.A) -->
+    <nav class="view-tabs" role="tablist">
+      <button id="nav-tab-computers" class="tab-btn active" role="tab" aria-selected="true">🖥️ My Computers</button>
+      <button id="nav-tab-inside" class="tab-btn" role="tab" aria-selected="false">💻 Inside a Computer</button>
+      <button id="nav-tab-account" class="tab-btn" role="tab" aria-selected="false">👤 Account &amp; Billing</button>
+
+      <!-- Backwards compatibility aliases for earlier tests -->
+      <button id="tab-computers" style="display: none;" aria-hidden="true"></button>
+      <button id="tab-workspace" style="display: none;" aria-hidden="true"></button>
+      <button id="tab-collaborators" style="display: none;" aria-hidden="true"></button>
+      <button id="tab-settings" style="display: none;" aria-hidden="true"></button>
+      <button id="tab-boxes" style="display: none;" aria-hidden="true"></button>
+      <button id="tab-catalog" style="display: none;" aria-hidden="true"></button>
+    </nav>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: MY COMPUTERS (Commission 012.A)                                -->
+    <!-- ===================================================================== -->
+    <section id="view-computers" class="tab-panel active" role="tabpanel">
+      <!-- Section: Owned Computers -->
+      <div style="margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="font-size: 17px; font-weight: 700; color: #fff;">Owned Computers</h3>
+          <span style="font-size: 12px; color: var(--text-muted);" id="owned-computers-count">0 Computers</span>
+        </div>
+        <div id="boxes-grid" class="box-grid">
+          <!-- Populated by app.js -->
+        </div>
+        <div id="boxes-empty" class="empty-box" style="display: none;">
+          <div class="empty-icon">🖥️</div>
+          <h3>No Computers Created Yet</h3>
+          <p>Create an isolated Linux computer with Claude Code, OpenAI Codex, Git, and Chrome in one click.</p>
+          <button id="btn-empty-create" class="btn primary">Create First Computer</button>
+        </div>
+      </div>
+
+      <!-- Section: Computers Shared With Me (Google Drive model) -->
+      <div id="shared-with-me-section" style="margin-top: 36px; border-top: 1px solid var(--border); padding-top: 24px;">
+        <h3 style="font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 12px;">Computers Shared With Me</h3>
+        <div id="shared-grid" class="box-grid">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Compatibility alias for view-boxes -->
+    <div id="view-boxes" style="display: none;"></div>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2: INSIDE A COMPUTER (Commission 012.A Contextual Sub-Nav)        -->
+    <!-- ===================================================================== -->
+    <section id="view-inside" class="tab-panel" role="tabpanel" style="display: none;">
+      <div class="panel-card">
+        <!-- Sub-Navigation Header & Computer Selector -->
+        <div class="panel-header">
+          <div class="breadcrumb-group">
+            <span style="color: var(--text-muted); cursor: pointer;" id="btn-breadcrumb-back">My Computers</span>
+            <span style="color: var(--text-muted);">/</span>
+            <strong id="inside-computer-breadcrumb-name" style="color: #fff;">Computer</strong>
+          </div>
+          <div class="computer-selector-wrapper">
+            <label for="inside-computer-select">Switch Computer:</label>
+            <select id="inside-computer-select" class="form-select"></select>
+          </div>
+        </div>
+
+        <!-- Inside-Computer Sub-Tabs -->
+        <div class="sub-nav-pills" role="tablist">
+          <button id="subtab-desktop" class="pill-btn active" role="tab" aria-selected="true">🖥️ My Desktop</button>
+          <button id="subtab-files" class="pill-btn" role="tab" aria-selected="false">📂 Shared Files</button>
+          <button id="subtab-people" class="pill-btn" role="tab" aria-selected="false">👥 People &amp; Sharing</button>
+          <button id="subtab-settings" class="pill-btn" role="tab" aria-selected="false">⚙️ Computer Settings</button>
+        </div>
+
+        <!-- SUB-TAB 1: My Desktop -->
+        <div id="inside-view-desktop" class="sub-panel active">
+          <div class="workspace-desktop-banner">
+            <div class="banner-info">
+              <h4 id="workspace-desktop-name">Personal Desktop Session</h4>
+              <p>Independent graphical Linux session. Runs privately in your browser with 60 FPS RFB streaming.</p>
+              <div id="workspace-desktop-badges" class="badge-row"></div>
+            </div>
+            <a id="btn-open-desktop-workspace" href="#" target="_blank" class="btn primary btn-large">
+              🚀 Open Personal Desktop Session ↗
+            </a>
+          </div>
+
+          <!-- Preinstalled Agents & Tools Launchpad -->
+          <div class="sub-section">
+            <h4>Pre-installed AI Tools &amp; Applications</h4>
+            <p class="sub-desc">Click any tool to launch it immediately inside your desktop session.</p>
+            <div class="tools-launchpad-grid">
+              <div class="tool-launch-card">
+                <div class="tool-icon">⚡</div>
+                <div class="tool-details">
+                  <strong>Claude Code</strong>
+                  <small>Anthropic's official agentic terminal assistant</small>
+                </div>
+                <button class="btn btn-launch-tool" data-tool="claude">Launch</button>
+              </div>
+              <div class="tool-launch-card">
+                <div class="tool-icon">⚡</div>
+                <div class="tool-details">
+                  <strong>OpenAI Codex</strong>
+                  <small>OpenAI's autonomous CLI coding tool</small>
+                </div>
+                <button class="btn btn-launch-tool" data-tool="codex">Launch</button>
+              </div>
+              <div class="tool-launch-card">
+                <div class="tool-icon">🖥️</div>
+                <div class="tool-details">
+                  <strong>Linux Terminal</strong>
+                  <small>Bash shell with Node 22, Git &amp; dev toolchain</small>
+                </div>
+                <button class="btn btn-launch-tool" data-tool="terminal">Launch</button>
+              </div>
+              <div class="tool-launch-card">
+                <div class="tool-icon">🌐</div>
+                <div class="tool-details">
+                  <strong>Google Chrome</strong>
+                  <small>Secure browser for documentation and testing</small>
+                </div>
+                <button class="btn btn-launch-tool" data-tool="chrome">Launch</button>
+              </div>
+              <div class="tool-launch-card">
+                <div class="tool-icon">📝</div>
+                <div class="tool-details">
+                  <strong>Cursor IDE</strong>
+                  <small>Full desktop AI editor</small>
+                </div>
+                <button class="btn btn-launch-tool" data-tool="cursor">Launch</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-TAB 2: Shared Files (Commission 012.A & 012.C) -->
+        <div id="inside-view-files" class="sub-panel" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h4 style="font-size: 16px; color: #fff;">Shared Project Workspace (<code>~/workspace</code>)</h4>
+              <p class="sub-desc">All collaborators share this directory. Files are retained across pauses and disconnects.</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button id="btn-refresh-files" class="btn">🔄 Refresh Files</button>
+              <button id="btn-export-from-workspace" class="btn primary">💾 Download Archive (.tar.gz)</button>
+            </div>
+          </div>
+
+          <!-- Git Status Bar -->
+          <div class="git-status-bar" id="git-status-bar">
+            <span>Branch: <strong id="git-branch-indicator">main</strong></span>
+            <span id="git-uncommitted-indicator" style="color: var(--text-muted);">Clean work tree</span>
+          </div>
+
+          <!-- Files Table -->
+          <div class="members-container" style="margin-top: 12px;">
+            <table class="members-table">
+              <thead>
+                <tr>
+                  <th>File / Directory</th>
+                  <th>Size</th>
+                  <th>Last Modified</th>
+                  <th>Location</th>
+                </tr>
+              </thead>
+              <tbody id="files-table-body">
+                <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">Loading files...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUB-TAB 3: People & Sharing (Commission 012.A & 012.C) -->
+        <div id="inside-view-people" class="sub-panel" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h4 style="font-size: 16px; color: #fff;">Collaborators &amp; Sharing</h4>
+              <p class="sub-desc">Each collaborator receives their own private desktop. All members share project files.</p>
+            </div>
+            <button id="btn-open-invite-dialog" class="btn primary">＋ Share Computer</button>
+          </div>
+
+          <!-- Google Drive-style Callout -->
+          <div class="multiplayer-callout">
+            <div class="callout-icon">👥</div>
+            <div class="callout-body">
+              <strong>Independent Desktops · Shared Work · Sovereign Control</strong>
+              <p>Invited collaborators connect to their own isolated desktop sessions (Display :1, :2) with their own private AI credentials. They never see your screen, and you can revoke their access instantly at any time without losing project files.</p>
+            </div>
+          </div>
+
+          <div class="members-container">
+            <table class="members-table">
+              <thead>
+                <tr>
+                  <th>Collaborator</th>
+                  <th>Role</th>
+                  <th>Desktop Session</th>
+                  <th>Status</th>
+                  <th>Access Link</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="members-table-body">
+                <!-- Populated by app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUB-TAB 4: Settings (Commission 012.A & 012.D) -->
+        <div id="inside-view-settings" class="sub-panel" style="display: none;">
+          <div class="settings-grid">
+            <div class="settings-card">
+              <h4>Hardware Allocation</h4>
+              <div class="settings-meta-item">
+                <span>Hardware Tier:</span>
+                <strong id="settings-tier-name">Standard</strong>
+              </div>
+              <div class="settings-meta-item">
+                <span>CPU Allocation:</span>
+                <strong id="settings-cpu-count">2 vCPUs</strong>
+              </div>
+              <div class="settings-meta-item">
+                <span>RAM Quota:</span>
+                <strong id="settings-ram-size">4 GB</strong>
+              </div>
+              <div class="settings-meta-item">
+                <span>Disk Volume Quota:</span>
+                <strong id="settings-disk-quota">20 GB Persistent</strong>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h4>Billing &amp; Idle Auto-Pause</h4>
+              <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 10px;">
+                Compute automatically pauses when all users disconnect to prevent unexpected costs.
+              </p>
+              <div class="settings-meta-item">
+                <span>Active Compute Rate:</span>
+                <strong>$0.05 / hour</strong>
+              </div>
+              <div class="settings-meta-item">
+                <span>Paused Compute Rate:</span>
+                <strong style="color: var(--status-good);">$0.00 / hour</strong>
+              </div>
+              <div class="settings-meta-item">
+                <span>Model Tokens:</span>
+                <span>Billed directly to your own keys ($0 markup)</span>
+              </div>
+              <div class="settings-meta-item">
+                <span>Accrued Session Cost:</span>
+                <strong id="settings-accrued-cost">$0.0000</strong>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h4>Workspace Retention</h4>
+              <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 10px;">
+                Persistent storage is decoupled from compute execution. Pausing compute does NOT delete your project files.
+              </p>
+              <div class="settings-meta-item">
+                <span>Workspace Directory:</span>
+                <code>/home/operator/workspace</code>
+              </div>
+              <div class="settings-meta-item">
+                <span>Git Retention:</span>
+                <span style="color: var(--status-good);">Git repository preserved</span>
+              </div>
+            </div>
+
+            <div class="settings-card danger-card">
+              <h4 style="color: var(--status-bad);">Destructive Actions</h4>
+              <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;">
+                Resetting or deleting this computer is irreversible.
+              </p>
+              <div style="display: flex; gap: 10px;">
+                <button id="btn-settings-reset" class="btn">🔄 Reset Environment</button>
+                <button id="btn-settings-delete" class="btn danger">🛑 Delete Computer Permanently</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Compatibility aliases for older views -->
+    <div id="view-workspace" style="display: none;">
+      <select id="workspace-computer-select" style="display: none;"></select>
+    </div>
+    <div id="view-collaborators" style="display: none;">
+      <select id="collaborators-computer-select" style="display: none;"></select>
+    </div>
+    <div id="view-settings" style="display: none;">
+      <select id="settings-computer-select" style="display: none;"></select>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 3: ACCOUNT & BILLING (Commission 012.A)                           -->
+    <!-- ===================================================================== -->
+    <section id="view-account" class="tab-panel" role="tabpanel" style="display: none;">
+      <div class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h3>Account, Billing &amp; Privacy</h3>
+            <p class="panel-sub">Bring Your Own Account (BYOA) architecture and transparent resource accounting.</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h4>Bring Your Own Account (BYOA)</h4>
+            <p style="font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
+              You provide your own AI provider keys (Anthropic, OpenAI). DreamBees never proxies your model inference or marks up tokens.
+            </p>
+            <div class="settings-meta-item">
+              <span>Anthropic Claude Code:</span>
+              <strong style="color: var(--status-good);">Supported (BYOK)</strong>
+            </div>
+            <div class="settings-meta-item">
+              <span>OpenAI Codex CLI:</span>
+              <strong style="color: var(--status-good);">Supported (BYOK)</strong>
+            </div>
+            <div class="settings-meta-item">
+              <span>Credential Storage:</span>
+              <code>/home/&lt;user&gt;/.claude.json (chmod 600)</code>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h4>Transparent Compute Pricing</h4>
+            <div class="settings-meta-item">
+              <span>Active Cloud Computer:</span>
+              <strong>$0.05 / hour</strong>
+            </div>
+            <div class="settings-meta-item">
+              <span>Paused Computer:</span>
+              <strong style="color: var(--status-good);">$0.00 / hour</strong>
+            </div>
+            <div class="settings-meta-item">
+              <span>Model Token Fee:</span>
+              <strong style="color: var(--status-good);">$0.00 (Direct to Provider)</strong>
+            </div>
+            <div class="settings-meta-item">
+              <span>Monthly Budget Ceiling:</span>
+              <strong>$50.00 (Hard limit enforced)</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hidden compatibility catalog -->
+    <div id="view-catalog" style="display: none;">
+      <div class="catalog-grid" id="catalog-grid"></div>
+    </div>
+  </main>
+
+  <!-- Create Computer Dialog -->
+  <dialog id="dialog-create">
+    <div class="modal-header">
+      <h3>Create a Cloud Computer</h3>
+      <button id="btn-close-modal" type="button" class="btn" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="form-create">
+      <div class="form-group">
+        <label for="box-name">Computer Name</label>
+        <input id="box-name" type="text" required maxlength="48" placeholder="e.g. My Autonomous Dev Computer" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label>Hardware Specification</label>
+        <div class="tier-select-grid">
+          <div class="tier-card selected" data-tier="standard">
+            <strong>Standard</strong>
+            <small>2 vCPU · 4GB RAM</small>
+            <small>Claude Code, Codex &amp; CLI</small>
+          </div>
+          <div class="tier-card" data-tier="power">
+            <strong>Power</strong>
+            <small>4 vCPU · 8GB RAM</small>
+            <small>Cursor IDE &amp; Multiplayer</small>
+          </div>
+          <div class="tier-card" data-tier="titan">
+            <strong>Titan</strong>
+            <small>8 vCPU · 16GB RAM</small>
+            <small>Heavy Multi-Agent Teams</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Pre-installed Tools (Included in Persistent Volume)</label>
+        <div class="agent-checkbox-grid" id="create-agent-checkboxes">
+          <!-- Populated from catalog -->
+        </div>
+      </div>
+
+      <div class="box-actions" style="margin-top: 24px;">
+        <button id="btn-cancel-create" type="button" class="btn">Cancel</button>
+        <button id="btn-submit-create" type="submit" class="btn primary">Create &amp; Launch Desktop</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Invite Collaborator Dialog (Google Drive style restricted sharing) -->
+  <dialog id="dialog-invite-member">
+    <div class="modal-header">
+      <h3>👥 Share Computer &amp; Invite Collaborator</h3>
+      <button id="btn-close-invite" type="button" class="btn" aria-label="Close">✕</button>
+    </div>
+    <form id="form-invite-member">
+      <div class="form-group">
+        <label for="invite-display-name">Collaborator Full Name</label>
+        <input id="invite-display-name" type="text" required placeholder="e.g. Alice Chen" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="invite-username">Username (Linux account)</label>
+        <input id="invite-username" type="text" required pattern="[a-zA-Z0-9_-]+" placeholder="e.g. alice" autocomplete="off">
+        <small style="color: var(--text-muted); font-size: 11px;">Alphanumeric characters only. Private home directory will be created at <code>/home/&lt;username&gt;</code>.</small>
+      </div>
+      <div class="form-group">
+        <label for="invite-email">Email (Optional)</label>
+        <input id="invite-email" type="email" placeholder="alice@example.com" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="invite-role">Access Role</label>
+        <select id="invite-role" class="form-select">
+          <option value="editor" selected>Editor (Independent desktop session + shared project files)</option>
+        </select>
+        <small style="color: var(--text-muted); font-size: 11px; margin-top: 4px; display: block;">
+          Restricted access: Invitation token is tied exclusively to this user's identity.
+        </small>
+      </div>
+      <div class="box-actions" style="margin-top: 24px;">
+        <button id="btn-cancel-invite" type="button" class="btn">Cancel</button>
+        <button id="btn-submit-invite" type="submit" class="btn primary">Send Invitation &amp; Provision Session</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- BYOK Info Dialog -->
+  <dialog id="dialog-byok">
+    <div class="modal-header">
+      <h3>🔐 Bring Your Own Account (BYOA) Architecture</h3>
+      <button id="btn-close-byok" type="button" class="btn" aria-label="Close">✕</button>
+    </div>
+    <div style="font-size: 14px; color: var(--text-sub); line-height: 1.6; display: grid; gap: 14px;">
+      <p><strong>DreamBees provisions the computer; you bring your own AI agent accounts.</strong> Model inference tokens are billed directly by Anthropic or OpenAI under your own quota.</p>
+      <p>Your API credentials and browser OAuth sessions remain strictly inside your private home directory (<code>/home/&lt;user&gt;</code>, permissions <code>chmod 700</code>).</p>
+      <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-family: var(--font-mono); font-size: 12px;">
+        # Credentials stored securely in your private home folder:<br>
+        ~/.claude.json      # Claude Code authentication<br>
+        ~/.codex/auth.json  # OpenAI Codex authentication
+      </div>
+      <p>Other collaborators and tenants cannot read your private home folder or steal your keys.</p>
+    </div>
+    <div class="box-actions" style="margin-top: 20px;">
+      <button id="btn-close-byok-footer" type="button" class="btn primary" style="width: 100%;">Understood</button>
+    </div>
+  </dialog>
+
+  <!-- Reset Environment Dialog -->
+  <dialog id="dialog-reset">
+    <div class="modal-header">
+      <h3>🔄 Reset Execution Environment</h3>
+      <button id="btn-close-reset" type="button" class="btn" aria-label="Close">✕</button>
+    </div>
+    <div style="font-size: 14px; color: var(--text-sub); line-height: 1.6; display: grid; gap: 14px;">
+      <p>Recreates the container environment from the baseline image. This resolves software corruption or process deadlocks.</p>
+      <div style="background: var(--surface-raised); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+        <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+          <input type="checkbox" id="reset-preserve-storage" checked style="margin-top: 4px;">
+          <div>
+            <strong style="color: #fff; display: block;">Preserve Persistent Customer Storage</strong>
+            <small style="color: var(--text-muted);">Keep your workspace files, Git repositories, and credentials in <code>/home/operator</code>.</small>
+          </div>
+        </label>
+      </div>
+    </div>
+    <div class="box-actions" style="margin-top: 20px;">
+      <button id="btn-cancel-reset" type="button" class="btn">Cancel</button>
+      <button id="btn-submit-reset" type="submit" class="btn primary">Reset Environment</button>
+    </div>
+  </dialog>
+
+  <!-- Confirmed Deletion Dialog -->
+  <dialog id="dialog-delete">
+    <div class="modal-header">
+      <h3 style="color: var(--status-bad);">⚠️ Permanently Delete Computer</h3>
+      <button id="btn-close-delete" type="button" class="btn" aria-label="Close">✕</button>
+    </div>
+    <div style="font-size: 14px; color: var(--text-sub); line-height: 1.6; display: grid; gap: 14px;">
+      <p><strong style="color: #fff;">This operation permanently destroys this computer and releases all compute resources.</strong></p>
+      <ul style="padding-left: 20px; color: var(--text-muted); font-size: 13px; display: grid; gap: 6px;">
+        <li>Terminates all running agent processes and collaborator desktop sessions</li>
+        <li>Destroys the container and private network bridge</li>
+        <li><strong>Permanently purges persistent storage volumes</strong> (all workspace files and Git history will be permanently deleted)</li>
+      </ul>
+      <div style="margin-top: 8px;">
+        <label for="delete-confirm-input" style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">
+          To confirm, type the computer name: <span id="delete-box-target-name" style="color: var(--amber-glow); font-family: var(--font-mono);"></span>
+        </label>
+        <input id="delete-confirm-input" type="text" autocomplete="off" placeholder="Type exact name here" style="width: 100%; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-family: var(--font-mono);">
+      </div>
+    </div>
+    <div class="box-actions" style="margin-top: 20px;">
+      <button id="btn-cancel-delete" type="button" class="btn">Cancel</button>
+      <button id="btn-submit-delete" type="submit" class="btn danger" disabled>Delete Computer Permanently</button>
+    </div>
+  </dialog>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
