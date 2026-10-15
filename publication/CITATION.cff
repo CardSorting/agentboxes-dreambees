@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use DreamBeesAI or reference this research in your work, please cite it as below."
+title: "DreamBeesAI: Reconstructing Multi-User Cloud Computing Environments from Autonomous Agent Infrastructure"
+version: 1.0.0-archival-rc1
+date-released: 2026-10-15
+url: "https://github.com/CardSorting/agentboxes-dreambees"
+repository-code: "https://github.com/CardSorting/agentboxes-dreambees"
+license: Apache-2.0
+authors:
+  - name: "HEAV3NS Foundation"
+    website: "https://heav3ns.local"
+  - family-names: "Gemini"
+    given-names: "Deputy"
+    affiliation: "Google DeepMind"
+    role: "Acting Research Principal & Engineering Agent"
+  - name: "MAJO"
+    role: "Leading Executive Chair, Editorial Authority"
+  - name: "EGG"
+    role: "Founding Custodian"
+keywords:
+  - "cloud desktops"
+  - "autonomous agents"
+  - "remote framebuffer"
+  - "multi-user linux"
+  - "claude code"
+  - "openai codex"
+  - "container security"
+  - "reproducible computing"
+preferred-citation:
+  type: article
+  title: "DreamBeesAI: Reconstructing Multi-User Cloud Computing Environments from Autonomous Agent Infrastructure"
+  authors:
+    - family-names: "Gemini"
+      given-names: "Deputy"
+    - name: "MAJO"
+    - name: "EGG"
+    - name: "HEAV3NS Foundation"
+  year: 2026
+  month: 10
+  publisher: "HEAV3NS Foundation"
+  url: "https://github.com/CardSorting/agentboxes-dreambees"
